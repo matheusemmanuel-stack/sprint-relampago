@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Gestão de Projetos{% endblock %}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        header h1 {
+            margin: 0 0 15px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        nav a:hover,
+        nav a.ativo {
+            background: #34495e;
+        }
+
+        main {
+            max-width: 1400px;
+            min-height: 65vh;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px #00000015;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 9px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            background: #27ae60;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #219150;
+        }
+
+        .botao-excluir {
+            background: #c0392b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #ecf0f1;
+        }
+
+        .mensagem {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .erro-campo {
+            color: #c0392b;
+            font-size: 14px;
+        }
+
+        .acao {
+            display: inline-block;
+            padding: 7px 10px;
+            margin: 2px;
+            border-radius: 4px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .editar {
+            background: #2980b9;
+        }
+
+        .excluir {
+            background: #c0392b;
+        }
+
+        .cancelar {
+            margin-left: 10px;
+            color: #2c3e50;
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            color: #777;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                padding: 0 12px;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 6px;
+            }
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Gestão de Projetos</h1>
+
+        <nav>
+            <a
+                href="{% url 'listar_e_criar_projetos' %}"
+                class="{% if request.resolver_match.url_name == 'listar_e_criar_projetos' or request.resolver_match.url_name == 'projeto_editar' or request.resolver_match.url_name == 'projeto_excluir' %}ativo{% endif %}"
+            >
+                Projetos
+            </a>
+
+            <a
+                href="{% url 'listar_e_criar_tarefas' %}"
+                class="{% if request.resolver_match.url_name == 'listar_e_criar_tarefas' or request.resolver_match.url_name == 'tarefa_excluir' %}ativo{% endif %}"
+            >
+                Tarefas
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mensagem {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        Sistema de Gestão de Projetos
+    </footer>
+</body>
+</html>
