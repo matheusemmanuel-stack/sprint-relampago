@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Tarefas</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+        }
+
+        .topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .voltar {
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 22px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        .campo label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .campo input[type="checkbox"] {
+            width: auto;
+        }
+
+        button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #219150;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border-bottom: 1px solid #ddd;
+            padding: 12px 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #ecf0f1;
+        }
+
+        .tabela {
+            overflow-x: auto;
+        }
+
+        .acao {
+            display: inline-block;
+            margin: 3px;
+            padding: 7px 9px;
+            border-radius: 4px;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .editar {
+            background: #2980b9;
+        }
+
+        .excluir {
+            background: #c0392b;
+        }
+
+        .mensagem {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .erro {
+            color: #c0392b;
+            font-size: 13px;
+        }
+
+        .cancelar {
+            display: inline-block;
+            margin-left: 8px;
+            color: #555;
+        }
+
+        .vazio {
+            padding: 20px 0;
+            color: #777;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topo">
+        <div>
+            <h1>Gestão de Tarefas</h1>
+            <p>Organize as tarefas dos seus projetos.</p>
+        </div>
+
+        <a class="voltar" href="{% url 'listar_e_criar_projetos' %}">
+            Voltar para projetos
+        </a>
+    </header>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mensagem {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <main class="container">
+        <section class="card">
+            <h2>
+                {% if tarefa %}
+                    Editar Tarefa
+                {% else %}
+                    Cadastrar Tarefa
+                {% endif %}
+            </h2>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="campo">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                            <div class="erro">
+                                {{ field.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {% if form.non_field_errors %}
+                    <div class="erro">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <button type="submit">
+                    {% if tarefa %}
+                        Salvar alterações
+                    {% else %}
+                        Cadastrar tarefa
+                    {% endif %}
+                </button>
+
+                {% if tarefa %}
+                    <a class="cancelar"
+                       href="{% url 'listar_e_criar_tarefas' %}">
+                        Cancelar
+                    </a>
+                {% endif %}
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Tarefas cadastradas ({{ tarefas.count }})</h2>
+
+            <div class="tabela">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tarefa</th>
+                            <th>Prioridade</th>
+                            <th>Concluída</th>
+                            <th>Projeto</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in tarefas %}
+                            <tr>
+                                <td>{{ item.titulo }}</td>
+                                <td>{{ item.prioridade }}</td>
+                                <td>
+                                    {% if item.concluido %}
+                                        Sim
+                                    {% else %}
+                                        Não
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.projeto.nome }}</td>
+                                <td>
+                                    <a class="acao editar"
+                                       href="{% url 'tarefa_editar' item.pk %}">
+                                        Editar
+                                    </a>
+
+                                    <a class="acao excluir"
+                                       href="{% url 'tarefa_excluir' item.pk %}">
+                                        Excluir
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="vazio">
+                                    Nenhuma tarefa cadastrada.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
