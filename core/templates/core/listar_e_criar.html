@@ -1,237 +1,103 @@
-```html
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Projetos</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-            background-color: #f4f6f9;
-            color: #333;
-        }
+{% extends 'core/base.html' %}
 
-        h1, h2 {
-            color: #2c3e50;
-        }
+{% block title %}
+    {% if projeto %}Editar Projeto{% else %}Projetos{% endif %}
+{% endblock %}
 
-        .container {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
+{% block content %}
+<div class="container">
 
-        .card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #219150;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #ecf0f1;
-        }
-
-        .error {
-            color: red;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .mensagem {
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .acao {
-            display: inline-block;
-            margin: 3px;
-            padding: 7px 10px;
-            border-radius: 4px;
-            text-decoration: none;
-            color: white;
-            font-size: 14px;
-        }
-
-        .editar {
-            background-color: #2980b9;
-        }
-
-        .excluir {
-            background-color: #c0392b;
-        }
-    </style>
-</head>
-
-<body>
-
-    <h1>Gestão de Projetos</h1>
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="mensagem {{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    <div class="container">
-
-        <div class="card">
-            <h2>
-                {% if projeto %}
-                    Editar Projeto
-                {% else %}
-                    Cadastrar Novo Projeto
-                {% endif %}
-            </h2>
-
-            <form method="POST">
-                {% csrf_token %}
-
-                {% if form.non_field_errors %}
-                    <div class="error">{{ form.non_field_errors }}</div>
-                {% endif %}
-
-                {% for field in form %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">
-                            {{ field.label }}
-                        </label>
-
-                        {{ field }}
-
-                        {% if field.errors %}
-                            <div class="error">
-                                {{ field.errors|striptags }}
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-
-                <button type="submit">
-                    {% if projeto %}
-                        Salvar Alterações
-                    {% else %}
-                        Salvar Projeto
-                    {% endif %}
-                </button>
-
-                {% if projeto %}
-                    <a href="{% url 'listar_e_criar_projetos' %}">Cancelar</a>
-                {% endif %}
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>Projetos Cadastrados ({{ projetos.count }})</h2>
-
-            {% if projetos %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Descrição</th>
-                            <th>Data de Início</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for projeto in projetos %}
-                            <tr>
-                                <td>
-                                    <strong>{{ projeto.nome }}</strong>
-                                </td>
-
-                                <td>{{ projeto.descricao }}</td>
-
-                                <td>
-                                    {{ projeto.data_inicio|date:"d/m/Y" }}
-                                </td>
-
-                                <td>
-                                    <a
-                                        class="acao editar"
-                                        href="{% url 'projeto_editar' projeto.pk %}"
-                                    >
-                                        Editar
-                                    </a>
-
-                                    <a
-                                        class="acao excluir"
-                                        href="{% url 'projeto_excluir' projeto.pk %}"
-                                    >
-                                        Excluir
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <section class="card">
+        <h2>
+            {% if projeto %}
+                Editar Projeto
             {% else %}
-                <p>Nenhum projeto cadastrado até o momento.</p>
+                Cadastrar Novo Projeto
             {% endif %}
-        </div>
+        </h2>
 
-    </div>
+        <form method="POST">
+            {% csrf_token %}
 
-</body>
-</html>
-```
+            {% if form.non_field_errors %}
+                <div class="erro-campo">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div class="erro-campo">
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit">
+                {% if projeto %}
+                    Salvar Alterações
+                {% else %}
+                    Salvar Projeto
+                {% endif %}
+            </button>
+
+            {% if projeto %}
+                <a class="cancelar"
+                   href="{% url 'listar_e_criar_projetos' %}">
+                    Cancelar
+                </a>
+            {% endif %}
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Projetos Cadastrados ({{ projetos.count }})</h2>
+
+        {% if projetos %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Data de Início</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in projetos %}
+                        <tr>
+                            <td><strong>{{ item.nome }}</strong></td>
+                            <td>{{ item.descricao }}</td>
+                            <td>{{ item.data_inicio|date:"d/m/Y" }}</td>
+                            <td>
+                                <a class="acao editar"
+                                   href="{% url 'projeto_editar' item.pk %}">
+                                    Editar
+                                </a>
+
+                                <a class="acao excluir"
+                                   href="{% url 'projeto_excluir' item.pk %}">
+                                    Excluir
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Nenhum projeto cadastrado até o momento.</p>
+        {% endif %}
+    </section>
+
+</div>
+{% endblock %}

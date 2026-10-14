@@ -1,77 +1,28 @@
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excluir Tarefa</title>
+{% extends 'core/base.html' %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            color: #333;
-            padding: 30px;
-        }
+{% block title %}Confirmar Exclusão de Tarefa{% endblock %}
 
-        .card {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 25px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
+{% block content %}
+<section class="card">
+    <h2>Confirmar Exclusão</h2>
 
-        h1 {
-            color: #2c3e50;
-        }
+    <p>
+        Tem certeza de que deseja excluir a tarefa
+        <strong>{{ tarefa.titulo }}</strong>?
+    </p>
 
-        p {
-            line-height: 1.6;
-        }
+    <form method="POST">
+        {% csrf_token %}
 
-        button, .cancelar {
-            display: inline-block;
-            padding: 10px 14px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
+        <button type="submit" class="botao-excluir">
+            Sim, Excluir
+        </button>
 
-        button {
-            background: #c0392b;
-            color: white;
-        }
-
-        .cancelar {
-            background: #e5e7eb;
-            color: #333;
-            margin-left: 5px;
-        }
-    </style>
-</head>
-
-<body>
-    <main class="card">
-        <h1>Confirmar exclusão</h1>
-
-        <p>
-            Tem certeza de que deseja excluir a tarefa
-            <strong>{{ tarefa.titulo }}</strong>?
-        </p>
-
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit">Sim, excluir</button>
-
-            <a class="cancelar"
-               href="{% url 'listar_e_criar_tarefas' %}">
-                Cancelar
-            </a>
-        </form>
-    </main>
-</body>
-</html>
+        <a class="cancelar"
+           href="{% url 'listar_e_criar_tarefas' %}">
+            Cancelar
+        </a>
+    </form>
+</section>
+{% endblock %}
